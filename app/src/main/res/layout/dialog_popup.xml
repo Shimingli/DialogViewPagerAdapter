@@ -5,13 +5,15 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:clipChildren="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.v4.view.ViewPager
+            android:clipChildren="false"
             android:id="@+id/dialog_viewpager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true" />
 
         <ImageView
@@ -22,6 +24,15 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="64dp"
             android:src="@drawable/delete" />
+        <LinearLayout
+            android:id="@+id/dots_layout"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="25dp"
+            android:gravity="center"
+            android:orientation="horizontal" />
     </RelativeLayout>
 
 </LinearLayout>

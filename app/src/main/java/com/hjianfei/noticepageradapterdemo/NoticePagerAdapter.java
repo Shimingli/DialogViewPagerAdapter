@@ -44,4 +44,13 @@ public class NoticePagerAdapter extends PagerAdapter {
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView(views.get(position));   //删除页卡
     }
+
+    /**
+     * 设置该页内容所占屏幕的宽度
+     */
+    @Override
+    public float getPageWidth(int position) {
+        //return 1.f; 默认返回1,代表该position占据了ViewPager的一整页,范围(0,1]
+        return 1f;
+    }
 }

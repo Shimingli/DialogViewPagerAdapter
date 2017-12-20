@@ -2,8 +2,10 @@ package com.hjianfei.noticepageradapterdemo;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -41,6 +43,7 @@ public class PagerDialog extends Dialog {
         this.images = images;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +56,7 @@ public class PagerDialog extends Dialog {
         dismissImgView = (ImageView)findViewById(R.id.imageview_dismiss_dialog);
 
         viewPager.setAdapter(createAdapter());
-        viewPager.setPageTransformer(true, new NoticePagerTransformer());
+       // viewPager.setPageTransformer(true, new NoticePagerTransformer());
         viewPager.setOffscreenPageLimit(images.length);
         dismissImgView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,13 +64,55 @@ public class PagerDialog extends Dialog {
                 EventBus.getDefault().post(new MessagEvent());
             }
         });
+        final LinearLayout dotsLayout = (LinearLayout) findViewById(R.id.dots_layout);
+        final ImageView[] mDots = new ImageView[images.length];
+        int dp1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7,
+                getContext().getResources().getDisplayMetrics());
+        final int dp2 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5,
+                getContext().getResources().getDisplayMetrics());
+        final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                dp1, dp1);
+
+        if (images.length > 0 && images.length != 1) {
+            for (int k = 0; k < images.length; k++) {
+                mDots[k] = new ImageView(getContext());
+                mDots[k].setBackgroundResource(R.drawable.dialog_dot_selector);
+                params.leftMargin = dp2;// 设置圆点间隔
+                params.rightMargin = dp2;// 设置圆点间隔
+                if (k == 0) {
+                    mDots[k].setSelected(true);
+                } else {
+                    mDots[k].setSelected(false);
+                }
+                mDots[k].setLayoutParams(params);
+                dotsLayout.addView(mDots[k], k);
+            }
+        }
+       viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+           @Override
+           public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+           }
+
+           @Override
+           public void onPageSelected(int position) {
+               for (int i=0;i<mDots.length;i++){
+                   mDots[i].setSelected(false);
+               }
+               mDots[position].setSelected(true);
+           }
+
+           @Override
+           public void onPageScrollStateChanged(int state) {
+
+           }
+       });
     }
 
     private PagerAdapter createAdapter(){
         List<View> views = new ArrayList<>();
         for (int i = 0; i < images.length; i ++){
             final int j = i;
-            ImageView[] mDots = new ImageView[images.length];
             int dp1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,7 ,
                     getContext().getResources().getDisplayMetrics());
             int dp2 = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5,
@@ -77,7 +122,6 @@ public class PagerDialog extends Dialog {
 
             View parent = LayoutInflater.from(getContext()).inflate(R.layout.item_pager, null);
             ImageView imageView = (ImageView)parent.findViewById(R.id.imageView);
-            LinearLayout dotsLayout = (LinearLayout)parent.findViewById(R.id.dots_layout);
             Glide.with(getContext()).load(images[i]).into(imageView);
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -85,23 +129,6 @@ public class PagerDialog extends Dialog {
                     Log.d("wnw", "img = " + j);
                 }
             });
-
-            //设置圆点
-            if (images.length > 0 && images.length != 1){
-                for (int k = 0; k < images.length; k++){
-                    mDots[k] = new ImageView(getContext());
-                    mDots[k].setBackgroundResource(R.drawable.dialog_dot_selector);
-                    params.leftMargin = dp2;// 设置圆点间隔
-                    params.rightMargin = dp2;// 设置圆点间隔
-                    if (k == i){
-                        mDots[k].setSelected(true);
-                    }else {
-                        mDots[k].setSelected(false);
-                    }
-                    mDots[k].setLayoutParams(params);
-                    dotsLayout.addView(mDots[k], k);
-                }
-            }
             views.add(parent);
         }
         return new NoticePagerAdapter(views);
